@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1.0,maximum-scale=1.0,
+    minimum-scale=1.0">
+  <title>canvas</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    #canvas {
+      display: block;
+      background: #ddd;
+    }
+    .actions{
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 5px;
+    }
+  </style>
+</head>
+<body>
+<div class="actions">
+  <label><input type="radio" name="penType" value="pen" checked>画笔</label>
+  <label><input type="radio" name="penType" value="eraser">橡皮擦</label>
+  <button id="save">保存</button>
+</div>
+<canvas id="canvas" width="300" height="300"></canvas>
+<script>
+  var canvas = document.getElementById('canvas')
+  var clientHeight = document.documentElement.clientHeight
+  var clientWidth = document.documentElement.clientWidth
+  canvas.height = clientHeight
+  canvas.width = clientWidth
+  var content = canvas.getContext('2d')
+  var prepoint
+  canvas.addEventListener('touchmove', function (e) {
+    e.preventDefault()
+    var {pageX, pageY} = e.touches[0]
+    var penType = document.querySelector('input[name="penType"]:checked').value
+    if (penType === 'pen') {
+      if (prepoint) {
+        content.strokeStyle = 'black'
+        content.beginPath()
+        content.moveTo(prepoint.pageX, prepoint.pageY)
+        content.lineTo(pageX, pageY)
+        content.stroke()
+      }
+      prepoint = {pageX, pageY}
+    } else if (penType === 'eraser') {
+      content.clearRect(pageX - 10, pageY - 10, 20, 20)
+    }
+  })
+  canvas.addEventListener('touchend', function () {
+    prepoint = null
+  })
+  save.onclick = function () {
+    var canvasImage = document.getElementById('canvas')
+    var data = canvasImage.toDataURL("image.png")
+    var newWindow = window.open('about:blank', 'image from canvasImage')
+    newWindow.document.write("<img src='" + data + "' alt=''>")
+  }
+</script>
+</body>
+</html>
